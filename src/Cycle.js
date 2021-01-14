@@ -5,7 +5,7 @@ const Cycle = (props) => {
     instructionQueue,
     registerFile,
     addSubRs,
-    MulDivRs,
+    mulDivRs,
     loadBuffer,
     storeBuffer,
   } = props.cycle
@@ -15,7 +15,7 @@ const Cycle = (props) => {
         <td>
           <table>
             <tr>
-              <td>Cycle: {props.cycle}</td>
+              <td>Cycle: {props.cycle.cycle}</td>
             </tr>
             <tr>
               <td>
@@ -32,6 +32,7 @@ const Cycle = (props) => {
               <td>Exec End</td>
               <td>Write</td>
             </tr>
+
             {instructionQueue.map((instruction) => (
               <tr>
                 <td>{instruction.type}</td>
@@ -120,7 +121,8 @@ const Cycle = (props) => {
               <td>Qk</td>
               <td>Busy</td>
             </tr>
-            {MulDivRs.map((instruction) => (
+
+            {mulDivRs.map((instruction) => (
               <tr>
                 <td>{instruction.name}</td>
                 <td>{instruction.op}</td>
@@ -177,6 +179,17 @@ const Cycle = (props) => {
               </tr>
             ))}
             {/* Store buffer */}
+            <tr>
+              <td colSpan={8}>
+                <div
+                  style={{
+                    width: '50vw',
+                    height: '5px',
+                    backgroundColor: 'black',
+                  }}
+                ></div>
+              </td>
+            </tr>
           </table>
         </td>
       </tr>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
+import nextCycle from './Helpers'
 import Cycle from './Cycle'
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
   const [instAddK, setInstAddK] = useState('')
   const [aluInst, setAlutInst] = useState(true)
   const [allCycles, setAllCycles] = useState([])
+  const [done, setDone] = useState(false)
   const [instructionQueueG, setInstructionQueue] = useState([])
   const [addSubRsG, setAddSubRs] = useState([
     { name: 'A1', op: '', Vj: '', Vk: '', Qj: '', Qk: '', busy: 0, index: -1 },
@@ -49,16 +51,128 @@ export default function App() {
     { reg: 'F9', Q: 0 },
     { reg: 'F10', Q: 0 },
   ])
-  const registerFileR = [
-    { name: 'R1', val: 0 },
-    { name: 'R2', val: 4 },
-  ]
-
+  const [dataMemory, setDataMemory] = useState([
+    23,
+    3,
+    9,
+    34,
+    434,
+    8,
+    2,
+    24,
+    23,
+    4,
+    23,
+    3,
+    9,
+    34,
+    434,
+    8,
+    2,
+    24,
+    23,
+    4,
+    23,
+    3,
+    9,
+    34,
+    434,
+    8,
+    2,
+    24,
+    23,
+    4,
+    1,
+    2,
+  ])
+  const [writeBuffer, setWriteBuffer] = useState([])
+  const [error, setError] = useState('')
+  //remember that you are making the assumption that R1 and R2 have constant values
+  //add reset button
   const aluTypes = ['ADD.D', 'SUB.D', 'MUL.D', 'DIV.D']
   const memTypes = ['L.D', 'S.D']
   const regList = ['F0', 'F2', 'F4', 'F6', 'F8', 'F10']
   const regList1 = ['R1', 'R2']
 
+  const handleNextCycle = () => {
+    setStart(true)
+
+    if (!done && instructionQueueG.length > 0) {
+      nextCycle(
+        setInstructionQueue,
+        setCycle,
+        setDone,
+        setRegisterFile,
+        setLoadBuffer,
+        setStoreBuffer,
+        setAddSubRs,
+        setMulDivRs,
+        setWriteBuffer,
+        setCounter,
+        setDataMemory,
+        instructionQueueG,
+        cycle,
+        registerFileG,
+        loadBufferG,
+        storeBufferG,
+        addSubRsG,
+        mulDivRsG,
+        writeBuffer,
+        counter,
+        dataMemory
+      )
+      let instructionQueueTemp = []
+      let registerFileTemp = []
+      let loadBufferTemp = []
+      let storeBufferTemp = []
+      let addSubRsTemp = []
+      let mulDivRsTemp = []
+      let writeBufferTemp = []
+      let dataMemoryTemp = []
+      instructionQueueG.forEach((inst) => {
+        inst.endExecution && inst.endExecution <= cycle
+          ? instructionQueueTemp.push({ ...inst })
+          : instructionQueueTemp.push({ ...inst, endExecution: '' })
+      })
+      registerFileG.forEach((inst) => {
+        registerFileTemp.push({ ...inst })
+      })
+      loadBufferG.forEach((inst) => {
+        loadBufferTemp.push({ ...inst })
+      })
+      storeBufferG.forEach((inst) => {
+        storeBufferTemp.push({ ...inst })
+      })
+      mulDivRsG.forEach((inst) => {
+        mulDivRsTemp.push({ ...inst })
+      })
+      addSubRsG.forEach((inst) => {
+        addSubRsTemp.push({ ...inst })
+      })
+      writeBuffer.forEach((inst) => {
+        writeBufferTemp.push({ ...inst })
+      })
+      dataMemory.forEach((inst) => {
+        dataMemoryTemp.push({ ...inst })
+      })
+      let cycleInfo = {
+        instructionQueue: instructionQueueTemp,
+        cycle: cycle,
+        registerFile: registerFileTemp,
+        loadBuffer: loadBufferTemp,
+        storeBuffer: storeBufferTemp,
+        addSubRs: addSubRsTemp,
+        mulDivRs: mulDivRsTemp,
+        writeBuffer: writeBufferTemp,
+        counter: counter,
+        dataMemory: dataMemoryTemp,
+      }
+      console.log('cycle info in app: ', cycleInfo)
+      setAllCycles([...allCycles, cycleInfo])
+    } else {
+      setError('Cycles are done')
+    }
+  }
   return (
     <table style={{ width: '100%' }}>
       <tbody>
@@ -148,23 +262,6 @@ export default function App() {
                   <p>Instructions List</p>
                 </td>
               </tr>
-
-              <tr style={{ marginTop: '10px' }}>
-                <td>Type</td>
-                <td>D</td>
-                <td>J</td>
-                <td>K</td>
-              </tr>
-              {instructions.map((inst) => {
-                return (
-                  <tr style={{ marginTop: '5px' }}>
-                    <td>{inst.type}</td>
-                    <td>{inst.D}</td>
-                    <td>{inst.J}</td>
-                    <td>{inst.K}</td>
-                  </tr>
-                )
-              })}
               <tr>
                 <td>
                   <Button
@@ -193,6 +290,23 @@ export default function App() {
                   </Button>
                 </td>
               </tr>
+              <tr style={{ marginTop: '10px' }}>
+                <td>Type</td>
+                <td>D</td>
+                <td>J</td>
+                <td>K</td>
+              </tr>
+              {instructions.map((inst) => {
+                return (
+                  <tr style={{ marginTop: '5px' }}>
+                    <td>{inst.type}</td>
+                    <td>{inst.D}</td>
+                    <td>{inst.J}</td>
+                    <td>{inst.K}</td>
+                  </tr>
+                )
+              })}
+
               <tr>
                 <td>
                   <Form.Control
@@ -272,6 +386,21 @@ export default function App() {
                 <td>
                   <Button
                     onClick={() => {
+                      if (start) {
+                        setError(
+                          'Cannot add instructions after execution started'
+                        )
+                        return
+                      }
+                      if (
+                        instAddType === '' ||
+                        instAddD === '' ||
+                        instAddJ === '' ||
+                        instAddK === ''
+                      ) {
+                        setError('No entry can be empty')
+                        return
+                      }
                       let instObj = {
                         type: instAddType,
                         D: instAddD,
@@ -280,7 +409,8 @@ export default function App() {
                       }
                       let instructionsTemp = [...instructions, instObj]
                       setInstructions(instructionsTemp)
-                      console.log('instructions:', instructions)
+                      let instructionQueueTemp = [...instructionQueueG, instObj]
+                      setInstructionQueue(instructionQueueTemp)
                     }}
                   >
                     Add Instruction
@@ -298,14 +428,17 @@ export default function App() {
               </tr>
               <tr>
                 <td>
-                  <Button onClick={() => {}}>Next Cycle</Button>
+                  <Button onClick={handleNextCycle}>Next Cycle</Button>
                 </td>
               </tr>
             </table>
           </td>
         </tr>
-        {/* mapping cycles */}
-        <Cycle></Cycle>
+        <p>{error}</p>
+        {console.log('all cycles:', allCycles)}
+        {allCycles.map((cyc) => (
+          <Cycle cycle={cyc}></Cycle>
+        ))}
       </tbody>
     </table>
   )
