@@ -93,8 +93,123 @@ export default function App() {
   const memTypes = ['L.D', 'S.D']
   const regList = ['F0', 'F2', 'F4', 'F6', 'F8', 'F10']
   const regList1 = ['R1', 'R2']
+  const handleReset = () => {
+    setError('')
+    setStart(false)
+    setDone(false)
+    setWriteBuffer([])
+    setCycle(1)
+    setCounter(0)
+    setAllCycles([])
+    setAddSubRs([
+      {
+        name: 'A1',
+        op: '',
+        Vj: '',
+        Vk: '',
+        Qj: '',
+        Qk: '',
+        busy: 0,
+        index: -1,
+      },
+      {
+        name: 'A2',
+        op: '',
+        Vj: '',
+        Vk: '',
+        Qj: '',
+        Qk: '',
+        busy: 0,
+        index: -1,
+      },
+      {
+        name: 'A3',
+        op: '',
+        Vj: '',
+        Vk: '',
+        Qj: '',
+        Qk: '',
+        busy: 0,
+        index: -1,
+      },
+    ])
+    setMulDivRs([
+      {
+        name: 'M1',
+        op: '',
+        Vj: '',
+        Vk: '',
+        Qj: '',
+        Qk: '',
+        busy: 0,
+        index: -1,
+      },
+      {
+        name: 'M2',
+        op: '',
+        Vj: '',
+        Vk: '',
+        Qj: '',
+        Qk: '',
+        busy: 0,
+        index: -1,
+      },
+    ])
+    setLoadBuffer([
+      { name: 'L1', busy: 0, address: 0, index: -1 },
+      { name: 'L2', busy: 0, address: 0, index: -1 },
+    ])
 
+    setDataMemory([
+      23,
+      3,
+      9,
+      34,
+      434,
+      8,
+      2,
+      24,
+      23,
+      4,
+      23,
+      3,
+      9,
+      34,
+      434,
+      8,
+      2,
+      24,
+      23,
+      4,
+      23,
+      3,
+      9,
+      34,
+      434,
+      8,
+      2,
+      24,
+      23,
+      4,
+      1,
+      2,
+    ])
+    setRegisterFile([
+      { reg: 'F0', Q: 0 },
+      { reg: 'F1', Q: 0 },
+      { reg: 'F2', Q: 0 },
+      { reg: 'F3', Q: 0 },
+      { reg: 'F4', Q: 0 },
+      { reg: 'F5', Q: 0 },
+      { reg: 'F6', Q: 0 },
+      { reg: 'F7', Q: 0 },
+      { reg: 'F8', Q: 0 },
+      { reg: 'F9', Q: 0 },
+      { reg: 'F10', Q: 0 },
+    ])
+  }
   const handleNextCycle = () => {
+    setError('')
     setStart(true)
 
     if (!done && instructionQueueG.length > 0) {
@@ -266,6 +381,7 @@ export default function App() {
                 <td>
                   <Button
                     onClick={() => {
+                      setError('')
                       setAlutInst(true)
                       setInstAddJ('')
                       setInstAddK('')
@@ -279,6 +395,7 @@ export default function App() {
                 <td>
                   <Button
                     onClick={() => {
+                      setError('')
                       setAlutInst(false)
                       setInstAddJ(0)
                       setInstAddK('')
@@ -386,6 +503,7 @@ export default function App() {
                 <td>
                   <Button
                     onClick={() => {
+                      setError('')
                       if (start) {
                         setError(
                           'Cannot add instructions after execution started'
@@ -419,7 +537,9 @@ export default function App() {
                 <td>
                   <Button
                     onClick={() => {
+                      setError('')
                       setInstructions([])
+                      setInstructionQueue([])
                     }}
                   >
                     Reset Instructions
@@ -429,6 +549,15 @@ export default function App() {
               <tr>
                 <td>
                   <Button onClick={handleNextCycle}>Next Cycle</Button>
+                </td>
+                <td>
+                  <Button
+                    onClick={() => {
+                      handleReset()
+                    }}
+                  >
+                    Reset
+                  </Button>
                 </td>
               </tr>
             </table>
