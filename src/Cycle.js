@@ -10,16 +10,24 @@ const Cycle = (props) => {
     storeBuffer,
   } = props.cycle
   return (
-    <table>
+    <table style={{ marginRight: 'auto', marginLeft: 'auto' }}>
       <tr>
         <td>
-          <table>
+          <table
+            style={{
+              width: '50vw',
+              fontSize: '1.2vw',
+            }}
+            className='cycle'
+          >
             <tr>
-              <td>Cycle: {props.cycle.cycle}</td>
+              <td colSpan='8' style={{ fontWeight: 'bold' }}>
+                Cycle: {props.cycle.cycle}
+              </td>
             </tr>
             <tr>
-              <td>
-                <p>Instrution Queue</p>
+              <td colSpan='8' style={{ fontWeight: 'bold' }}>
+                Instrution Queue
               </td>
             </tr>
             <tr>
@@ -28,8 +36,8 @@ const Cycle = (props) => {
               <td>J</td>
               <td>K</td>
               <td>Issue</td>
-              <td>Exec Start</td>
-              <td>Exec End</td>
+              <td>Start</td>
+              <td> End</td>
               <td>Write</td>
             </tr>
 
@@ -52,10 +60,16 @@ const Cycle = (props) => {
       {/* instruction queue */}
       <tr>
         <td>
-          <table>
+          <table
+            style={{
+              width: '50vw',
+              fontSize: '1.2vw',
+            }}
+            className='cycle'
+          >
             <tr>
-              <td>
-                <p>Register File</p>
+              <td colSpan='2' style={{ fontWeight: 'bold' }}>
+                Register File
               </td>
             </tr>
             <tr>
@@ -74,10 +88,16 @@ const Cycle = (props) => {
       {/* Register File */}
       <tr>
         <td>
-          <table>
+          <table
+            style={{
+              width: '50vw',
+              fontSize: '1.2vw',
+            }}
+            className='cycle'
+          >
             <tr>
-              <td>
-                <p>Add/Sub Reservation Station</p>
+              <td colSpan='7' style={{ fontWeight: 'bold' }}>
+                Add/Sub Reservation Station
               </td>
             </tr>
             <tr>
@@ -106,10 +126,16 @@ const Cycle = (props) => {
       {/* add/ sub rs */}
       <tr>
         <td>
-          <table>
+          <table
+            style={{
+              width: '50vw',
+              fontSize: '1.2vw',
+            }}
+            className='cycle'
+          >
             <tr>
-              <td>
-                <p>Mul/Duv Reservation Station</p>
+              <td colSpan='7' style={{ fontWeight: 'bold' }}>
+                Mul/Duv Reservation Station
               </td>
             </tr>
             <tr>
@@ -139,27 +165,49 @@ const Cycle = (props) => {
       {/* mul/div rs */}
       <tr>
         <td>
-          <p>Load Buffer</p>
+          <table
+            style={{
+              width: '50vw',
+              fontSize: '1.2vw',
+            }}
+            className='cycle'
+          >
+            <tbody>
+              <tr>
+                <td colSpan='3' style={{ fontWeight: 'bold' }}>
+                  Load Buffer
+                </td>
+              </tr>
+              <tr>
+                <td>Name</td>
+                <td>Busy</td>
+                <td>Address</td>
+              </tr>
+              {loadBuffer.map((instruction) => (
+                <tr>
+                  <td>{instruction.name}</td>
+                  <td>{instruction.busy}</td>
+                  <td>{instruction.address}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </td>
       </tr>
-      <tr>
-        <td>Name</td>
-        <td>Busy</td>
-        <td>Address</td>
-      </tr>
-      {loadBuffer.map((instruction) => (
-        <tr>
-          <td>{instruction.name}</td>
-          <td>{instruction.busy}</td>
-        </tr>
-      ))}
       {/* Load buffer */}
       <tr>
         <td>
-          <table>
+          <table
+            style={{
+              width: '50vw',
+              fontSize: '1.2vw',
+              marginBottom: '1vw',
+            }}
+            className='cycle'
+          >
             <tr>
-              <td>
-                <p>Store Buffer</p>
+              <td colSpan='5' style={{ fontWeight: 'bold' }}>
+                Store Buffer
               </td>
             </tr>
             <tr>
@@ -179,18 +227,17 @@ const Cycle = (props) => {
               </tr>
             ))}
             {/* Store buffer */}
-            <tr>
-              <td colSpan={8}>
-                <div
-                  style={{
-                    width: '50vw',
-                    height: '5px',
-                    backgroundColor: 'black',
-                  }}
-                ></div>
-              </td>
-            </tr>
           </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div
+            style={{
+              width: '70vw',
+              borderTop: '5px dotted black',
+            }}
+          ></div>
         </td>
       </tr>
     </table>

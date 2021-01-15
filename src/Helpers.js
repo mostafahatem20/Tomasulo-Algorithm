@@ -2,12 +2,12 @@ var instructionQueue = []
 var finish = false
 var writeQueue = []
 var loadBuffer = [
-  { name: 'L1', busy: 0, address: 0, index: -1 },
-  { name: 'L2', busy: 0, address: 0, index: -1 },
+  { name: 'L1', busy: 0, address: '', index: -1 },
+  { name: 'L2', busy: 0, address: '', index: -1 },
 ]
 var storeBuffer = [
-  { name: 'S1', busy: 0, address: 0, V: '', Q: '', index: -1 },
-  { name: 'S2', busy: 0, address: 0, V: '', Q: '', index: -1 },
+  { name: 'S1', busy: 0, address: '', V: '', Q: '', index: -1 },
+  { name: 'S2', busy: 0, address: '', V: '', Q: '', index: -1 },
 ]
 var addSubRS = [
   { name: 'A1', op: '', Vj: '', Vk: '', Qj: '', Qk: '', busy: 0, index: -1 },
@@ -72,7 +72,6 @@ var dataMemory = [
 var counter = 0
 var cycle = 1
 let addCycles = 4
-let subCycles = 4
 let mulCycles = 6
 let divCycles = 10
 let loadCycles = 2
@@ -83,16 +82,18 @@ let storeCycles = 2
 // const divCycles = 40;
 // const loadCycles = 2;
 
-const addToQueue = (instruction) => {
-  instructionQueue.push(instruction)
-}
+// const addToQueue = (instruction) => {
+//   instructionQueue.push(instruction)
+// }
 const issueLoad = () => {
   if (loadBuffer[0].busy === 0 || loadBuffer[1].busy === 0) {
     let found = false
+
     for (let i = 0; i < storeBuffer.length; i++) {
       if (
         storeBuffer[i].address ===
         instructionQueue[counter].J / 4 +
+          // eslint-disable-next-line no-loop-func
           intRegFile.find((one) => one.name === instructionQueue[counter].K).val
       ) {
         found = true
@@ -120,10 +121,12 @@ const issueStore = () => {
       if (
         storeBuffer[i].address ===
           instructionQueue[counter].J / 4 +
+            // eslint-disable-next-line no-loop-func
             intRegFile.find((one) => one.name === instructionQueue[counter].K)
               .val ||
         loadBuffer[i].address ===
           instructionQueue[counter].J / 4 +
+            // eslint-disable-next-line no-loop-func
             intRegFile.find((one) => one.name === instructionQueue[counter].K)
               .val
       ) {
@@ -141,7 +144,7 @@ const issueStore = () => {
       storeBuffer[index].index = counter
       const reg = regFile.find((one) => one.reg === instructionQueue[counter].D)
       typeof reg.Q === 'number'
-        ? (storeBuffer[index].v = reg.Q)
+        ? (storeBuffer[index].V = reg.Q)
         : (storeBuffer[index].Q = reg.Q)
       counter++
     }
@@ -172,8 +175,6 @@ const issueAdd = () => {
   }
 }
 const issueSub = () => {
-  console.log('instruction queue', instructionQueue[counter])
-  console.log('reg file:', regFile)
   if (
     addSubRS[0].busy === 0 ||
     addSubRS[1].busy === 0 ||
@@ -184,7 +185,6 @@ const issueSub = () => {
     addSubRS[index].op = 'SUB'
     const regJ = regFile.find((one) => one.reg === instructionQueue[counter].J)
     const regK = regFile.find((one) => one.reg === instructionQueue[counter].K)
-    console.log('counter:', counter)
     typeof regJ.Q === 'number'
       ? (addSubRS[index].Vj = regJ.Q)
       : (addSubRS[index].Qj = regJ.Q)
@@ -336,7 +336,7 @@ const operation = (i) => {
     loadBuffer[loadBuffer.indexOf(operation)] = {
       name: operation.name,
       busy: 0,
-      address: 0,
+      address: '',
       index: -1,
     }
   }
@@ -346,7 +346,7 @@ const operation = (i) => {
     storeBuffer[storeBuffer.indexOf(operation)] = {
       name: operation.name,
       busy: 0,
-      address: 0,
+      address: '',
       V: '',
       Q: '',
       index: -1,
@@ -375,7 +375,12 @@ const nextCycle = (
   mulDivRs1,
   writeBuffer,
   counter1,
-  dataMemory1
+  dataMemory1,
+  addCycles1,
+  mulCycles1,
+  divCycles1,
+  loadCycles1,
+  storeCycles1
 ) => {
   instructionQueue = instructionQueue1
   cycle = cycle1
@@ -387,6 +392,11 @@ const nextCycle = (
   writeQueue = writeBuffer
   counter = counter1
   dataMemory = dataMemory1
+  addCycles = Number(addCycles1)
+  mulCycles = Number(mulCycles1)
+  divCycles = Number(divCycles1)
+  loadCycles = Number(loadCycles1)
+  storeCycles = Number(storeCycles1)
   // done excution
   let passed
   if (writeQueue.length > 0) {
@@ -469,11 +479,8 @@ const nextCycle = (
         issueDiv()
         break
       default:
-        console.log('Instruction not included in tomasulo')
         break
     }
-  } else {
-    console.log('Instruction queue is empty')
   }
   // waza3 yabaaaa
   if (passed) distribute(passed)
@@ -485,14 +492,6 @@ const nextCycle = (
       writeQueue.push(i)
     }
   }
-  // console.log(cycle)
-  // console.log('IQ', instructionQueue)
-  // console.log('Reg', regFile)
-  // console.log('AddSub', addSubRS)
-  // console.log('MulDiv', mulDivRS)
-  // console.log('load', loadBuffer)
-  // console.log('store', storeBuffer)
-  // console.log('******************')
   cycle++
   for (let i = 0; i < instructionQueue.length; i++) {
     finish = true

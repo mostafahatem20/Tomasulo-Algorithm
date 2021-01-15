@@ -2,3 +2,16 @@ html,
 body {
   background-color: #f4f4f4;
 }
+.cycle {
+  border: 5px solid black;
+  margin-right: auto;
+  margin-left: auto;
+}
+.cycle td {
+  border: 1px solid #dddddd;
+  text-align: left;
+}
+
+.cycle tr:nth-child(even) {
+  background-color: #dddddd;
+}
