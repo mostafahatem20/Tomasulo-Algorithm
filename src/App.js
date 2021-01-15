@@ -94,7 +94,19 @@ export default function App() {
   //add reset button
   const aluTypes = ['ADD.D', 'SUB.D', 'MUL.D', 'DIV.D']
   const memTypes = ['L.D', 'S.D']
-  const regList = ['F0', 'F2', 'F4', 'F6', 'F8', 'F10']
+  const regList = [
+    'F0',
+    'F1',
+    'F2',
+    'F3',
+    'F4',
+    'F5',
+    'F6',
+    'F7',
+    'F8',
+    'F9',
+    'F10',
+  ]
   const regList1 = ['R1', 'R2']
   const handleReset = () => {
     setMsg('')
@@ -562,10 +574,16 @@ export default function App() {
                         min='0'
                         step='4'
                         max='112'
-                        onkeydown={false}
                         value={instAddJ}
                         onChange={(e) => {
-                          setInstAddJ(e.target.value)
+                          if (
+                            e.target.value > 112 ||
+                            e.target.value < 0 ||
+                            e.target.value % 4 !== 0
+                          ) {
+                          } else {
+                            setInstAddJ(e.target.value)
+                          }
                         }}
                         style={{
                           fontSize: '1.2vw',
@@ -573,6 +591,7 @@ export default function App() {
                           padding: '0.5vw',
                         }}
                         readOnly={start}
+                        defaultValue='0'
                       />
                     )}
                   </td>
