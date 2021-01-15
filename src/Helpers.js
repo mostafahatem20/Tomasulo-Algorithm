@@ -309,8 +309,7 @@ const operation = (i) => {
       ret.value = mul
       if (reg) reg.Q = mul
     } else {
-      const div =
-        operation.Vj / operation.Vk === 'NaN' ? 0 : operation.Vj / operation.Vk
+      const div = operation.Vk === 0 ? 0 : operation.Vj / operation.Vk
       const reg = regFile.find((one) => one.Q === operation.name)
       ret.value = div
       if (reg) reg.Q = div
